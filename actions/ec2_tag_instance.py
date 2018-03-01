@@ -4,7 +4,7 @@ import re
 ### Add Tags to EC2 ### 
 # Tag format: AUTO: ec2_tag_instance key value
 #Tags with spaces can be added if they are surrounded by quotes: ex: ec2_tag_instance "this is my key" "this is a value"
-def run_action(rule,entity, params):
+def run_action(rule,entity,params):
     instance = entity['id']
     region = entity['region']
     region = region.replace("_","-")

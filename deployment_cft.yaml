@@ -42,34 +42,35 @@ Resources:
          Statement:
            - Effect: Allow
              Action:
-               - S3:GetObject
-               - sns:Publish
-               - sts:GetCallerIdentity
-               - ec2:TerminateInstances
-               - ec2:StopInstances
-               - ec2:CreateTags
-               - ec2:CreateFlowLogs
-               - ec2:MonitorInstances # For ec2_enable_detailed_monitoring
-               - ec2:DeleteSecurityGroup
-               - ec2:DescribeSecurityGroups
-               - ec2:RevokeSecurityGroupEgress
-               - ec2:RevokeSecurityGroupIngress
-               - s3:DeleteBucket
-               - s3:GetBucketPolicy
-               - s3:DeleteBucketPolicy
-               - s3:GetBucketAcl
-               - s3:PutBucketAcl
-               - iam:CreatePolicy
-               - iam:GetPolicy
-               - iam:AttachRolePolicy
-               - iam:CreateRole
-               - iam:UpdateAccountPasswordPolicy # For IAM_turn_on_password_policy
-               - iam:AttachUserPolicy
-               - s3:PutObject # For create_cloudtrail
-               - s3:PutBucketPolicy # For create_cloudtrail
-               - s3:CreateBucket # For create_cloudtrail
                - cloudtrail:CreateTrail # For create_cloudtrail
                - cloudtrail:StartLogging # For create_cloudtrail
+               - ec2:CreateFlowLogs
+               - ec2:CreateTags
+               - ec2:DeleteSecurityGroup
+               - ec2:DescribeSecurityGroups
+               - ec2:MonitorInstances # For ec2_enable_detailed_monitoring
+               - ec2:RevokeSecurityGroupEgress
+               - ec2:RevokeSecurityGroupIngress
+               - ec2:StopInstances
+               - ec2:TerminateInstances
+               - iam:AttachRolePolicy
+               - iam:AttachUserPolicy
+               - iam:CreatePolicy
+               - iam:CreateRole
+               - iam:GetPolicy
+               - iam:UpdateAccountPasswordPolicy # For IAM_turn_on_password_policy
+               - s3:CreateBucket # For create_cloudtrail                              
+               - s3:DeleteBucket
+               - s3:DeleteBucketPolicy
+               - s3:GetBucketAcl
+               - s3:GetBucketPolicy
+               - s3:GetObject
+               - s3:PutBucketAcl
+               - s3:PutBucketPolicy # For create_cloudtrail
+               - s3:PutObject # For create_cloudtrail
+               - sns:Publish # For exporting logs
+               - sts:AssumeRole # For multi-account support
+               - sts:GetCallerIdentity # For verifying what account we're running in
              Resource: '*'
       Environment:
         Variables:

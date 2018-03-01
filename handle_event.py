@@ -3,6 +3,38 @@ import boto3
 import importlib 
 from botocore.exceptions import ClientError
 
+
+#### NEED TO CLEAN UP
+# http://boto3.readthedocs.io/en/latest/reference/core/session.html
+def create_boto_connections(credentials_for_event,region):
+    boto_connections = {}
+    
+    if credentials_for_event is "not_needed":
+        boto_connections['ec2_client'] = boto3.client('ec2', region_name=region)
+        boto_connections['s3_client'] = boto3.client('s3')
+        boto_connections['ec2_resource'] = boto3.resource('ec2', region_name=region)
+
+
+    else:
+        boto_connections['ec2_client'] = boto3.client('ec2', region_name=region,         
+            aws_access_key_id = credentials_for_event['AccessKeyId'],
+            aws_secret_access_key = credentials_for_event['SecretAccessKey'],
+            aws_session_token = credentials_for_event['SessionToken']
+            )
+        boto_connections['s3_client'] = boto3.client('s3',         
+            aws_access_key_id = credentials_for_event['AccessKeyId'],
+            aws_secret_access_key = credentials_for_event['SecretAccessKey'],
+            aws_session_token = credentials_for_event['SessionToken']
+            )
+        boto_connections['ec2_resource'] = boto3.resource('ec2', region_name=region,         
+            aws_access_key_id = credentials_for_event['AccessKeyId'],
+            aws_secret_access_key = credentials_for_event['SecretAccessKey'],
+            aws_session_token = credentials_for_event['SessionToken']
+            )
+
+
+    return boto_connections    
+
 def handle_event(message,text_output_array):
     post_to_sns = True
     #Break out the values from the JSON payload from Dome9
@@ -10,21 +42,12 @@ def handle_event(message,text_output_array):
     status = message['status']
     entity_id = message['entity']['id']
     entity_name = message['entity']['name']
+    region = message['entity']['region']
+    region = region.replace("_","-")
 
     #Make sure that the event that's being referenced is for the account this function is running in.
     event_account_id = message['account']['id']
-    try:
-        #get the accountID
-        sts = boto3.client("sts")
-        lambda_account_id = sts.get_caller_identity()["Account"]
-    except ClientError as e:
-        text_output_array.append("Unexpected STS error: %s \n"  % e)
 
-    if lambda_account_id != event_account_id:
-        text_output_array.append("Error: This finding was found in account id %s. The Lambda function is running in account id: %s. Remediations need to be ran from the account there is the issue in.\n" % (event_account_id, lambda_account_id))
-        post_to_sns = False
-        return text_output_array,post_to_sns
-            
     #All of the remediation values are coming in on the compliance tags and they're pipe delimited
     compliance_tags = message['rule']['complianceTags'].split("|")
 
@@ -71,7 +94,61 @@ def handle_event(message,text_output_array):
             print("Found action '%s', about to invoke it" % action)
             action_msg = ""
             try:
-                action_msg = action_module.run_action(message['rule'],message['entity'], params)
+                # Get the session info here. No point in waisting cycles running it up top if we aren't going to run an action anyways:
+                try:
+                    #get the accountID
+                    sts = boto3.client("sts")
+                    lambda_account_id = sts.get_caller_identity()["Account"]
+                except ClientError as e:
+                    text_output_array.append("Unexpected STS error: %s \n"  % e)
+
+                if lambda_account_id != event_account_id: #Work needs to be done outside of this account
+                        #If it's not the same account, try to assume role to the new one
+                        role_arn = "arn:aws:iam::" + event_account_id + ":role/dome9-auto-remediations"
+                        text_output_array.append("Compliance failure was found for an account outside of the one the function is running in. Trying to assume_role to target account %s .\n" % event_account_id) 
+                        try:
+                            credentials_for_event = globals()['all_session_credentials'][account_id]
+                            text_output_array.append("Found existing credentials to use from still warm lambda functions. Skipping another STS assume role\n")                
+                        except (NameError,KeyError):
+                            #If we can't find the credentials, try to generate new ones
+
+                            text_output_array.append("Session credentials weren't found cached in the function. Trying to generate new ones.\n")
+
+                            global all_session_credentials
+                            all_session_credentials = {}
+                            # create an STS client object that represents a live connection to the STS service
+                            sts_client = boto3.client('sts')
+                            
+                            # Call the assume_role method of the STSConnection object and pass the role ARN and a role session name.
+                            try:
+                                assumedRoleObject = sts_client.assume_role(
+                                RoleArn=role_arn,
+                                RoleSessionName="Dome9AssumeRoleSession1"
+                                )
+                                # From the response that contains the assumed role, get the temporary credentials that can be used to make subsequent API calls
+                                all_session_credentials[event_account_id] = assumedRoleObject['Credentials']
+                                credentials_for_event = all_session_credentials[event_account_id]
+                            except ClientError as e:
+                                error = e.response['Error']['Code']
+                                if error == 'AccessDenied':
+                                    text_output_array.append("Tried and failed to assume a role in the target account. Please verify that the cross account role is createad. \n")
+                                    post_to_sns = False
+                                    continue
+                                else:
+                                    print(e)
+                                    continue            
+
+                else:
+                    credentials_for_event = "not_needed"
+
+                #Generate boto_connections to pass to functions and do it without assume role credentials
+                try:
+                    boto_connections = create_boto_connections(credentials_for_event,region)        
+                except Exception as e: 
+                    text_output_array.append("Error while creating boto_connections\n")
+
+                ## Run the action
+                action_msg = action_module.run_action(message['rule'],message['entity'],params,boto_connections)
             except Exception as e: 
                 action_msg = "Error while executing function '%s'.\n Error: %s \n" % (action,e)
                 print(action_msg)
