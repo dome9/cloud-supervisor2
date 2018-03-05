@@ -11,17 +11,11 @@ def create_boto_connections(credentials_for_event,region):
     
     if credentials_for_event is "not_needed":
         boto_connections['ec2_client'] = boto3.client('ec2', region_name=region)
-        boto_connections['s3_client'] = boto3.client('s3')
         boto_connections['ec2_resource'] = boto3.resource('ec2', region_name=region)
-
+        boto_connections['s3_client'] = boto3.client('s3')
 
     else:
         boto_connections['ec2_client'] = boto3.client('ec2', region_name=region,         
-            aws_access_key_id = credentials_for_event['AccessKeyId'],
-            aws_secret_access_key = credentials_for_event['SecretAccessKey'],
-            aws_session_token = credentials_for_event['SessionToken']
-            )
-        boto_connections['s3_client'] = boto3.client('s3',         
             aws_access_key_id = credentials_for_event['AccessKeyId'],
             aws_secret_access_key = credentials_for_event['SecretAccessKey'],
             aws_session_token = credentials_for_event['SessionToken']
@@ -31,7 +25,11 @@ def create_boto_connections(credentials_for_event,region):
             aws_secret_access_key = credentials_for_event['SecretAccessKey'],
             aws_session_token = credentials_for_event['SessionToken']
             )
-
+        boto_connections['s3_client'] = boto3.client('s3',         
+            aws_access_key_id = credentials_for_event['AccessKeyId'],
+            aws_secret_access_key = credentials_for_event['SecretAccessKey'],
+            aws_session_token = credentials_for_event['SessionToken']
+            )
 
     return boto_connections    
 
