@@ -121,21 +121,18 @@ def handle_event(message,text_output_array):
                             try:
                                 assumedRoleObject = sts_client.assume_role(
                                 RoleArn=role_arn,
-                                RoleSessionName="Dome9AssumeRoleSession1"
+                                RoleSessionName="CloudSupervisorAutoRemedation"
                                 )
                                 # From the response that contains the assumed role, get the temporary credentials that can be used to make subsequent API calls
-                                all_session_credentials[event_account_id] = assumedRoleObject['Credentials']
-                                credentials_for_event = all_session_credentials[event_account_id]
+                                credentials_for_event = all_session_credentials[event_account_id] = assumedRoleObject['Credentials']
+                                
                             except ClientError as e:
                                 error = e.response['Error']['Code']
+                                print(e)
                                 if error == 'AccessDenied':
                                     text_output_array.append("Tried and failed to assume a role in the target account. Please verify that the cross account role is createad. \n")
-                                    post_to_sns = False
-                                    continue
-                                else:
-                                    print(e)
-                                    continue            
-
+                                    continue                                
+                                
                 else:
                     credentials_for_event = "not_needed"
 
@@ -146,7 +143,7 @@ def handle_event(message,text_output_array):
                     text_output_array.append("Error while creating boto_connections\n")
 
                 ## Run the action
-                action_msg = action_module.run_action(message['rule'],message['entity'],params,boto_connections)
+                action_msg = action_module.run_action(boto_connections,message['rule'],message['entity'],params)
             except Exception as e: 
                 action_msg = "Error while executing function '%s'.\n Error: %s \n" % (action,e)
                 print(action_msg)
