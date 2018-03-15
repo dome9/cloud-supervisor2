@@ -1,8 +1,11 @@
 import re
+import os
 import boto3
 import importlib 
 from botocore.exceptions import ClientError
 
+account_mode = os.getenv('ACCOUNT_MODE','')
+cross_account_role_name = os.getenv('CROSS_ACCOUNT_ROLE_NAME','')
 
 #### NEED TO CLEAN UP
 # http://boto3.readthedocs.io/en/latest/reference/core/session.html
@@ -100,16 +103,21 @@ def handle_event(message,text_output_array):
                 except ClientError as e:
                     text_output_array.append("Unexpected STS error: %s \n"  % e)
 
+                #Account mode will be set in the lambda variables. We'll default to single mdoe 
                 if lambda_account_id != event_account_id: #Work needs to be done outside of this account
+                    if account_mode == "multi": #multi or single account mode?
                         #If it's not the same account, try to assume role to the new one
-                        role_arn = "arn:aws:iam::" + event_account_id + ":role/dome9-auto-remediations"
+                        if cross_account_role_name:
+                            role_arn = "arn:aws:iam::" + event_account_id + ":role/" + cross_account_role_name
+                        else:
+                            role_arn = "arn:aws:iam::" + event_account_id + ":role/dome9-auto-remediations"
+
                         text_output_array.append("Compliance failure was found for an account outside of the one the function is running in. Trying to assume_role to target account %s .\n" % event_account_id) 
                         try:
                             credentials_for_event = globals()['all_session_credentials'][account_id]
                             text_output_array.append("Found existing credentials to use from still warm lambda functions. Skipping another STS assume role\n")                
                         except (NameError,KeyError):
                             #If we can't find the credentials, try to generate new ones
-
                             text_output_array.append("Session credentials weren't found cached in the function. Trying to generate new ones.\n")
 
                             global all_session_credentials
@@ -120,9 +128,9 @@ def handle_event(message,text_output_array):
                             # Call the assume_role method of the STSConnection object and pass the role ARN and a role session name.
                             try:
                                 assumedRoleObject = sts_client.assume_role(
-                                RoleArn=role_arn,
-                                RoleSessionName="CloudSupervisorAutoRemedation"
-                                )
+                                    RoleArn=role_arn,
+                                    RoleSessionName="CloudSupervisorAutoRemedation"
+                                    )
                                 # From the response that contains the assumed role, get the temporary credentials that can be used to make subsequent API calls
                                 credentials_for_event = all_session_credentials[event_account_id] = assumedRoleObject['Credentials']
                                 
@@ -131,7 +139,12 @@ def handle_event(message,text_output_array):
                                 print(e)
                                 if error == 'AccessDenied':
                                     text_output_array.append("Tried and failed to assume a role in the target account. Please verify that the cross account role is createad. \n")
-                                    continue                                
+                                    continue                          
+
+                    else:
+                        text_output_array.append("Error: This finding was found in account id %s. The Lambda function is running in account id: %s. Remediations need to be ran from the account there is the issue in.\n" % (event_account_id, lambda_account_id))
+                        post_to_sns = False
+                        return text_output_array,post_to_sns
                                 
                 else:
                     credentials_for_event = "not_needed"
