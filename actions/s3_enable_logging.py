@@ -12,7 +12,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 ## Turn on S3 bucket logging 
-def run_action(rule,entity,params):
+def run_action(boto_session,rule,entity,params):
     bucket_name = entity['id']
 
     #target_bucket needs to be passed through params
@@ -22,8 +22,8 @@ def run_action(rule,entity,params):
 
     target_bucket_name = params[0]
 
-    s3 = boto3.resource('s3')
-    bucket_logging = s3.BucketLogging(bucket_name)
+    s3_resource = boto_session.resource('s3')
+    bucket_logging = s3_resource.BucketLogging(bucket_name)
 
     try:
         result = bucket_logging.put(

@@ -12,8 +12,6 @@ import re
 #Tags with spaces can be added if they are surrounded by quotes: ex: ec2_tag_instance "this is my key" "this is a value"
 def run_action(boto_session,rule,entity,params):
     instance = entity['id']
-    region = entity['region']
-    region = region.replace("_","-")
 
     if len(params) == 2: #Standard key value formatting
         key = params[0]

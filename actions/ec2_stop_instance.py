@@ -10,8 +10,9 @@ import boto3
 ### Turn off EC2 instance ###
 def run_action(boto_session,rule,entity,params):
     instance = entity['id']
-    ec2 = boto_session.client('ec2')
-    result = ec2.stop_instances(InstanceIds=[instance])
+    ec2_client = boto_session.client('ec2')
+    
+    result = ec2_client.stop_instances(InstanceIds=[instance])
 
     responseCode = result['ResponseMetadata']['HTTPStatusCode']
     if responseCode >= 400:
