@@ -17,9 +17,9 @@ Table of Contents
 =================
 
 * [Overview](#overview)
-  * [What is this ?](#what-is-this-)
-  * [Why and when would I need it ?](#why-and-when-would-i-need-it-)
-  * [How does it work ?](#how-does-it-work-)
+  * [What is this?](#what-is-this-)
+  * [Why and when would I need it?](#why-and-when-would-i-need-it-)
+  * [How does it work?](#how-does-it-work-)
 * [Setup Steps](#setup-steps)
   * [Outside of Dome9](#outside-of-dome9)
   * [In Dome9](#in-dome9)
@@ -45,6 +45,11 @@ For some organizations that is enough. However, at a certain scale and cloud mat
 This approach could reduce the load from the security operators and drastically reduce the time to resolve security issues.
 
 ## How does it work ?
+
+### Single account mode:
+![Data Flow](./pictures/data-flow.png?raw=true "Title")
+
+### Multi account mode:
 ![Data Flow](./pictures/cs2_multi_acct_workflow.jpg?raw=true "Title")
 
 
@@ -58,6 +63,24 @@ This approach could reduce the load from the security operators and drastically 
 
 
 # Setup Steps
+
+## Decide on deployment mode
+
+### Single vs Multi
+
+#### Single
+In single account mode, the Lambda function will only remediate issues found within the account it's running in. If the event is from another account, it'll be skipped.
+
+Setup for Single mode:
+Skip down to 'Outside of Dome9'
+
+#### Multi
+In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different one. Each account that will have remediation actions will need a cross-account role to the master account. 
+
+Setup for Multi-account mode:
+- Update deployment_cft.yaml (ACCOUNT_MODE: 'single') to 'multi'
+- By default, the cross account roles will all need to be named "dome9-auto-remediations". If you want a different name, add a new line in deployment_cft.yaml under "Variables:" called "CROSS_ACCOUNT_ROLE_NAME:" and set the value to the new name for the role. 
+
 
 ## Outside of Dome9
 
@@ -124,6 +147,43 @@ aws sns subscribe \
 ```
 
 
+### IF MULTI-ACCOUNT:
+
+#### Set up cross account roles for each account that will be remediated
+
+```bash
+cd cross_account_role_configs
+```
+
+Role creation needs to be done via something other than CloudFormation because CFTs don't output consistent role names
+
+#### Update trust_policy.json with the account ID where the main function will live
+
+#### Create the cross-account role
+```bash
+aws iam create-role \
+--role-name dome9-auto-remediations \
+--assume-role-policy-document file://trust_policy.json                    
+```
+
+#### Create the IAM policy for the role
+```bash
+aws iam create-policy \
+--policy-name CloudSupervisorRemediations \
+--policy-document file://remediation_policy.json \
+--query 'Policy.Arn'
+```
+
+#### Link the new policy and role
+Take ARN from create-policy for the next command           
+```bash
+aws iam attach-role-policy \
+--role-name dome9-auto-remediations \
+--policy-arn <ARN FROM LAST COMMAND>
+```              
+
+
+
 
 
 ## In Dome9
@@ -145,7 +205,7 @@ All available remediation actions are in the actions folder.
 Make sure you're getting the results you want and expect
 
 ### Set the Dome9 compliance bundle to run via continuous compliance. 
-Currently there needs to be a 1 Continuous Compliance bundle per account
+If you're in single account mode, there needs to be a 1 Continuous Compliance bundle per account. If not, select all the accounts that you set up cross-account roles in. 
 Set the output topic as the ARN from the InputTopicARN one we set up
 Set the format to be JSON - Full Entity
 
