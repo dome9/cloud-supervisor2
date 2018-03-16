@@ -88,7 +88,7 @@ def handle_event(message,text_output_array):
                         text_output_array.append("Compliance failure was found for an account outside of the one the function is running in. Trying to assume_role to target account %s .\n" % event_account_id) 
 
                         try:
-                            credentials_for_event = globals()['all_session_credentials'][account_id]
+                            credentials_for_event = globals()['all_session_credentials'][event_account_id]
                             text_output_array.append("Found existing credentials to use from still warm lambda functions. Skipping another STS assume role\n")        
 
                         except (NameError,KeyError):
@@ -108,13 +108,6 @@ def handle_event(message,text_output_array):
                                     )
                                 # From the response that contains the assumed role, get the temporary credentials that can be used to make subsequent API calls
                                 credentials_for_event = all_session_credentials[event_account_id] = assumedRoleObject['Credentials']
-                                
-                                boto_session = boto3.Session(
-                                    region_name=region,         
-                                    aws_access_key_id = credentials_for_event['AccessKeyId'],
-                                    aws_secret_access_key = credentials_for_event['SecretAccessKey'],
-                                    aws_session_token = credentials_for_event['SessionToken']
-                                    )
 
                             except ClientError as e:
                                 error = e.response['Error']['Code']
@@ -122,6 +115,13 @@ def handle_event(message,text_output_array):
                                 if error == 'AccessDenied':
                                     text_output_array.append("Tried and failed to assume a role in the target account. Please verify that the cross account role is createad. \n")
                                     continue                          
+
+                        boto_session = boto3.Session(
+                            region_name=region,         
+                            aws_access_key_id = credentials_for_event['AccessKeyId'],
+                            aws_secret_access_key = credentials_for_event['SecretAccessKey'],
+                            aws_session_token = credentials_for_event['SessionToken']
+                            )
 
                     else:
                         # In single account mode, we don't want to try to run actions outside of this one
