@@ -20,6 +20,9 @@ def lambda_handler(event, context):
     timestamp = "ReportTime: " + message['reportTime'] + "\n"
     text_output_array.append(timestamp)
 
+    event_account = "Account id:" + message['account']['id']
+    text_output_array.append(event_account)
+
     try:
         text_output_array, post_to_sns = handle_event(message,text_output_array)
     except Exception as e: 
