@@ -21,7 +21,7 @@ def lambda_handler(event, context):
 
     text_output_array.append(timestamp)
 
-    event_account = "Account id:" + message['account']['id']
+    event_account = "Account id:" + message['account']['id'] + "\n"
     text_output_array.append(event_account)
 
     try:
