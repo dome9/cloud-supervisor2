@@ -75,6 +75,7 @@ Resources:
       Environment:
         Variables:
           SNS_TOPIC_ARN: !Ref OutputTopic
+          ACCOUNT_MODE: 'single'
       Events:
         d9Findings:
           Type: SNS
