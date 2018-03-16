@@ -1,0 +1,18 @@
+# Have to do it via CLI because CFTs don't output consistent role names
+
+# Update trust_policy.json with the account ID where the main function will live
+
+aws iam create-role --role-name dome9-auto-remediations --assume-role-policy-document file://trust_policy.json                    
+
+                  
+aws iam create-policy \
+--policy-name CloudSupervisorRemediations \
+--policy-document file://remediation_policy.json
+
+#take ARN from this for the next command
+           
+
+aws iam attach-role-policy \
+--role-name dome9-auto-remediations \
+--policy-arn <ARN FROM LAST COMMAND>
+              

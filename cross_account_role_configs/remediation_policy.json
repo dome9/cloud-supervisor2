@@ -1,0 +1,46 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudSupervisor",
+            "Effect": "Allow",
+            "Action": [
+                "cloudtrail:StartLogging",
+                "ec2:MonitorInstances",
+                "s3:CreateBucket",
+                "iam:CreateRole",
+                "iam:AttachRolePolicy",
+                "s3:GetBucketPolicy",
+                "S3:GetObject",
+                "s3:PutEncryptionConfiguration",
+                "iam:PassRole",
+                "sns:Publish",
+                "ec2:CreateSecurityGroup",
+                "ec2:RevokeSecurityGroupEgress",
+                "s3:PutBucketAcl",
+                "rds:ModifyDBInstance",
+                "ec2:ModifyInstanceAttribute",
+                "s3:DeleteBucket",
+                "ec2:TerminateInstances",
+                "iam:GetPolicy",
+                "ec2:CreateTags",
+                "iam:AttachUserPolicy",
+                "s3:GetBucketAcl",
+                "s3:DeleteBucketPolicy",
+                "ec2:StopInstances",
+                "ec2:DescribeSecurityGroups",
+                "iam:CreatePolicy",
+                "ec2:RevokeSecurityGroupIngress",
+                "s3:PutObject",
+                "s3:PutBucketLogging",
+                "iam:UpdateAccountPasswordPolicy",
+                "ec2:CreateFlowLogs",
+                "cloudtrail:CreateTrail",
+                "ec2:DeleteSecurityGroup",
+                "s3:PutBucketPolicy",
+                "sts:GetCallerIdentity"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
