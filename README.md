@@ -49,6 +49,8 @@ This approach could reduce the load from the security operators and drastically 
 ### Single account mode:
 ![Data Flow](./pictures/data-flow.png?raw=true "Title")
 
+
+
 ### Multi account mode:
 ![Data Flow](./pictures/cs2_multi_acct_workflow.jpg?raw=true "Title")
 
@@ -75,7 +77,7 @@ Setup for Single mode:
 Skip down to 'Outside of Dome9'
 
 #### Multi
-In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different one. Each account that will have remediation actions will need a cross-account role to the master account. 
+In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different account than the one the function is running in. Each account that will have remediation actions will need a cross-account role to the master account. 
 
 Setup for Multi-account mode:
 - Update deployment_cft.yaml (ACCOUNT_MODE: 'single') to 'multi'
