@@ -71,7 +71,7 @@ This approach could reduce the load from the security operators and drastically 
 #### Single
 In single account mode, the Lambda function will only remediate issues found within the account it's running in. If the event is from another account, it'll be skipped.
 
-Setup for Single mode:
+Setup for Single mode:<br>
 Skip down to 'Outside of Dome9'
 
 #### Multi
