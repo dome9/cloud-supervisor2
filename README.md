@@ -15,22 +15,20 @@ This solution is meant to be used in conjunction with Dome9's Continuous Complia
 
 Table of Contents
 =================
-
 * [Overview](#overview)
-  * [What is this?](#what-is-this-)
-  * [Why and when would I need it?](#why-and-when-would-i-need-it-)
-  * [How does it work?](#how-does-it-work-)
+  * [What is this ?](#what-is-this-)
+  * [Why and when would I need it ?](#why-and-when-would-i-need-it-)
+  * [How does it work ?](#how-does-it-work-)
 * [Setup Steps](#setup-steps)
+  * [Decide on deployment mode](#decide-on-deployment-mode)
   * [Outside of Dome9](#outside-of-dome9)
   * [In Dome9](#in-dome9)
 * [Sample Setup Example](#sample-setup-example)
-  * [Outside of Dome9](#outside-of-dome9-1)
-  * [In Dome9](#in-dome9-1)
 * [Examples](#examples)
   * [Sample output from the remediation function](#sample-output-from-the-remediation-function)
   * [Sample event output from Dome9](#sample-event-output-from-dome9)
 * [Adding new actions](#adding-new-actions)
-* [Questions / Comments](#questions--comments)
+  * [Questions / Comments](#questions--comments)
 
 
 
