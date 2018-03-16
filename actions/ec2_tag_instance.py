@@ -9,14 +9,8 @@ Limitations: none
 import boto3
 import re
 
-### Add Tags to EC2 ### 
-<<<<<<< HEAD
-# Tag format: AUTO: ec2_tag_instance key value
 #Tags with spaces can be added if they are surrounded by quotes: ex: ec2_tag_instance "this is my key" "this is a value"
 def run_action(rule,entity,params):
-=======
-def run_action(rule,entity, params):
->>>>>>> 9661ff3490e93165fed24cb28856c6ebf9e87d7d
     instance = entity['id']
     region = entity['region']
     region = region.replace("_","-")
