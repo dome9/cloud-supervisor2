@@ -45,12 +45,12 @@ This approach could reduce the load from the security operators and drastically 
 ## How does it work ?
 
 ### Single account mode:
-![Data Flow](./pictures/data-flow.png?raw=true "Title")
+![Data Flow](./pictures/data-flow.png?raw=true "Single account mode")
 
 
 
 ### Multi account mode:
-![Data Flow](./pictures/cs2_multi_acct_workflow.jpg?raw=true "Title")
+![Data Flow](./pictures/cs2_multi_acct_workflow.jpg?raw=true "Multi account mode")
 
 
 
