@@ -149,7 +149,7 @@ aws sns subscribe \
 
 ### IF MULTI-ACCOUNT:
 
-#### Set up cross account roles for each account that will be remediated
+#### Set up cross account roles for EACH account that will be remediated
 
 ```bash
 cd cross_account_role_configs
@@ -163,7 +163,8 @@ Role creation needs to be done via something other than CloudFormation because C
 ```bash
 aws iam create-role \
 --role-name dome9-auto-remediations \
---assume-role-policy-document file://trust_policy.json                    
+--assume-role-policy-document file://trust_policy.json \
+--profile <aws_account_profile>                                      
 ```
 
 #### Create the IAM policy for the role
@@ -171,7 +172,8 @@ aws iam create-role \
 aws iam create-policy \
 --policy-name CloudSupervisorRemediations \
 --policy-document file://remediation_policy.json \
---query 'Policy.Arn'
+--query 'Policy.Arn' \
+--profile <aws_account_profile>                   
 ```
 
 #### Link the new policy and role
@@ -179,7 +181,8 @@ Take ARN from create-policy for the next command
 ```bash
 aws iam attach-role-policy \
 --role-name dome9-auto-remediations \
---policy-arn <ARN FROM LAST COMMAND>
+--policy-arn <ARN FROM LAST COMMAND> \
+--profile <aws_account_profile>                   
 ```              
 
 
