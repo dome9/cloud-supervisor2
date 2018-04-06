@@ -10,9 +10,10 @@ import boto3
 ## Turn on S3 bucket versioning
 def run_action(boto_session,rule,entity,params):
     bucket_name = entity['id']
+
     s3_resource = boto_session.resource('s3')
-    
     bucket_versioning = s3_resource.BucketVersioning(bucket_name)
+    
     result = bucket_versioning.enable()
 
     responseCode = result['ResponseMetadata']['HTTPStatusCode']
