@@ -27,7 +27,7 @@ Table of Contents
 * [Sample Setup Example](#sample-setup-example)
 
 
-<< For more information, please see README_ADVANCED.md >>
+# For more technical information, please see README_ADVANCED.md
 
 # Overview
 ## What is this ?
