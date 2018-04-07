@@ -60,24 +60,6 @@ This approach could reduce the load from the security operators and drastically 
 
 # Setup Steps
 
-## Decide on deployment mode
-
-### Single vs Multi
-
-#### Single
-In single account mode, the Lambda function will only remediate issues found within the account it's running in. If the event is from another account, it'll be skipped.
-
-Setup for Single mode:<br>
-Skip down to 'Outside of Dome9'
-
-#### Multi
-In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different account than the one the function is running in. Each account that will have remediation actions will need a cross-account role to the master account. 
-
-#### Setup for Multi-account mode:
-- Update deployment_cft.yaml (ACCOUNT_MODE: 'single') to 'multi'
-- By default, the cross account roles will all need to be named "dome9-auto-remediations". If you want a different name, add a new line in deployment_cft.yaml under "Variables:" called "CROSS_ACCOUNT_ROLE_NAME:" and set the value to the new name for the role. 
-
-
 ## Outside of Dome9 Easy mode
 
 You can deploy this stack via the link below. It'll automatically select the region you were last in. 
@@ -108,7 +90,26 @@ aws sns subscribe \
 ```
 
 
-### IF MULTI-ACCOUNT:
+
+
+## Decide on deployment mode
+
+### Single vs Multi
+
+#### Single
+In single account mode, the Lambda function will only remediate issues found within the account it's running in. If the event is from another account, it'll be skipped.
+
+Setup for Single mode:<br>
+Skip down to 'Outside of Dome9'
+
+#### Multi
+In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different account than the one the function is running in. Each account that will have remediation actions will need a cross-account role to the master account. 
+
+#### Setup for Multi-account mode in AWS:
+In the dome9AutoRemediations lambda function:
+- Update ACCOUNT_MODE: 'single' to 'multi'
+- By default, the cross account roles will all need to be named "dome9-auto-remediations". If you want a different name, add a new line in deployment_cft.yaml under "Variables:" called "CROSS_ACCOUNT_ROLE_NAME:" and set the value to the new name for the role. 
+
 
 #### Set up cross account roles for EACH account that will be remediated
 
