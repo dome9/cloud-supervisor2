@@ -99,8 +99,8 @@ aws sns subscribe \
 #### Single
 In single account mode, the Lambda function will only remediate issues found within the account it's running in. If the event is from another account, it'll be skipped.
 
-Setup for Single mode:<br>
-Skip down to 'Outside of Dome9'
+This is the default mode. Nothing needs to be changed. 
+
 
 #### Multi
 In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different account than the one the function is running in. Each account that will have remediation actions will need a cross-account role to the master account. 
