@@ -27,6 +27,7 @@ Table of Contents
 * [Sample Setup Example](#sample-setup-example)
 
 
+<< For more information, please see README_ADVANCED.md >>
 
 # Overview
 ## What is this ?
@@ -172,19 +173,10 @@ If you're in single account mode, there needs to be a 1 Continuous Compliance bu
 Set the output topic as the ARN from the InputTopicARN one we set up
 Set the format to be JSON - Full Entity
 
-If you have a subscriber set up for the remediationOutput topic, you'll see this message when you send the SNS test message during setup:
-```
--------------------------
-ReportTime: 2018-02-04T01:38:05.5899299+00:00
-Error: This finding was found in account id 123456789123. The Lambda function is running in account id: 794306781643. Remediations need to be ran from the account there is the issue in.
--------------------------
-```
-This is alright and means that everything is working properly. 
-
 
 ### NOTE: 
 Currently Continuous Compliance sends a 'diff' for the SNS notifications. Because of this, if you have ran the bundle before, only new issues will be sent to SNS. 
-If you want to have the first auto-remediation run to include all pre-existing issues, you'll need to clone the bundle and set the new never-ran bundle as the thing that is being tested in the CC config. This works because if it's never ran, then every existing issue is considered 'new' and will be sent to SNS. 
+If you want to have the first auto-remediation run to include all pre-existing issues, you'll need to clone the bundle and set the new (never-ran) bundle as the thing that is being tested in the CC config. This works because if it's never ran, then every existing issue is considered 'new' and will be sent to SNS. 
 This will be changed in future releases and is being currently worked on. 
 
 

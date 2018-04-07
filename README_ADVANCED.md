@@ -1,8 +1,9 @@
+# Supporting docs for initial setup
 
 
 
 
-## Outside of Dome9 CLI mode
+## CS2 Setup without using the CFT Launch Button
 
 ### Clone this GitHub project
 ```bash 
@@ -52,18 +53,6 @@ ARN for the export logs topic   OutputTopicARN  arn:aws:sns:us-west-2:7268531848
 ARN that Dome9 sends events to  InputTopicARN   arn:aws:sns:us-west-2:726853184812:d9-findings
 ```
 Save these ARNs for the next step and the Dome9 Continuous Compliance setup
-
-
-
-
-## Questions / Comments
-Contact: Alex Corstorphine (alex@dome9.com)
-
-
-
-
-
-
 
 
 
@@ -136,14 +125,6 @@ ARN that Dome9 sends events to  InputTopicARN   arn:aws:sns:us-west-2:7268531848
     "SubscriptionArn": "pending confirmation"
 }
 ```
-
-
-
-
-
-
-
-
 
 
 
@@ -256,3 +237,10 @@ def run_action(rule,entity,params):
 
     return text_output 
 ```
+
+
+
+
+## Questions / Comments
+Contact: Alex Corstorphine (alex@dome9.com)
+
