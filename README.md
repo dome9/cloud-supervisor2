@@ -21,13 +21,13 @@ Table of Contents
   * [How does it work ?](#how-does-it-work-)
 * [Setup Steps](#setup-steps)
   * [Decide on deployment mode](#decide-on-deployment-mode)
-  * [Outside of Dome9 Easy mode](#outside-of-dome9-easy-mode)
+  * [Outside of Dome9 Easy mode](#outside-of-dome9)
   * [Outside of Dome9](#outside-of-dome9)
   * [In Dome9](#in-dome9)
 * [Sample Setup Example](#sample-setup-example)
 
 
-# For more technical information, please see README_ADVANCED.md
+## For more technical information, please see README_ADVANCED.md
 
 # Overview
 ## What is this ?
@@ -60,7 +60,7 @@ This approach could reduce the load from the security operators and drastically 
 
 # Setup Steps
 
-## Outside of Dome9 Easy mode
+## Outside of Dome9
 
 You can deploy this stack via the link below. It'll automatically select the region you were last in. 
 
