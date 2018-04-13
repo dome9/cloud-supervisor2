@@ -47,31 +47,31 @@ def handle_event(message,text_output_array):
         #Check the tag to see if we have AUTO: in it
         pattern = re.compile("^AUTO:\s.+")
         if pattern.match(tag):
-            text_output_array.append("Rule violation found: %s \nID: %s | Name: %s \nRemediation Action: %s \n" % (rule_name, entity_id, entity_name, tag))
+            text_output_array.append("Rule violation found: %s \nID: %s | Name: %s \nRemediation Bot: %s \n" % (rule_name, entity_id, entity_name, tag))
 
-            # Pull out only the action verb to run as a function
-            # The format is AUTO: action_name param1 param2
+            # Pull out only the bot verb to run as a function
+            # The format is AUTO: bot_name param1 param2
             arr = tag.split(' ')
             if len(arr) < 2:
-                err_msg = "Empty AUTO: tag. No action was specified"
+                err_msg = "Empty AUTO: tag. No bot was specified"
                 print(err_msg)
                 text_output_array.append(err_msg)
                 continue
             
-            action = arr[1]
+            bot = arr[1]
             params = arr[2:]
 
             try:
-                action_module = importlib.import_module('actions.' + action, package=None)
+                bot_module = importlib.import_module('bots.' + bot, package=None)
             except:
-                print("Error: could not find action: " + action)
-                text_output_array.append("Action: %s is not a known action. Skipping.\n" % action)
+                print("Error: could not find bot: " + bot)
+                text_output_array.append("Bot: %s is not a known bot. Skipping.\n" % bot)
                 continue
             
-            print("Found action '%s', about to invoke it" % action)
-            action_msg = ""
+            print("Found bot '%s', about to invoke it" % bot)
+            bot_msg = ""
             try:
-                # Get the session info here. No point in waisting cycles running it up top if we aren't going to run an action anyways:
+                # Get the session info here. No point in waisting cycles running it up top if we aren't going to run an bot anyways:
                 try:
                     #get the accountID
                     sts = boto3.client("sts")
@@ -129,7 +129,7 @@ def handle_event(message,text_output_array):
                             )
 
                     else:
-                        # In single account mode, we don't want to try to run actions outside of this one
+                        # In single account mode, we don't want to try to run bots outside of this one
                         text_output_array.append("Error: This finding was found in account id %s. The Lambda function is running in account id: %s. Remediations need to be ran from the account there is the issue in.\n" % (event_account_id, lambda_account_id))
                         post_to_sns = False
                         return text_output_array,post_to_sns
@@ -138,14 +138,14 @@ def handle_event(message,text_output_array):
                     #Boto will default to default session if we don't need assume_role credentials
                     boto_session = boto3.Session(region_name=region)                     
 
-                ## Run the action
-                action_msg = action_module.run_action(boto_session,message['rule'],message['entity'],params)
+                ## Run the bot
+                bot_msg = bot_module.run_bot(boto_session,message['rule'],message['entity'],params)
 
             except Exception as e: 
-                action_msg = "Error while executing function '%s'.\n Error: %s \n" % (action,e)
-                print(action_msg)
+                bot_msg = "Error while executing function '%s'.\n Error: %s \n" % (bot,e)
+                print(bot_msg)
             finally:
-                text_output_array.append(action_msg)
+                text_output_array.append(bot_msg)
 
     #After the remediation functions finish, send the notification out. 
     return text_output_array,post_to_sns
