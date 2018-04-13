@@ -62,7 +62,7 @@ This approach could reduce the load from the security operators and drastically 
 
 ## Outside of Dome9
 
-You can deploy this stack via the link below. It'll automatically select the region you were last in. 
+You can deploy this stack via the link below. (Currently this only deploys in us-west-2)
 
 [<img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=cloudsupervisor2&templateURL=https://s3-us-west-2.amazonaws.com/dome9cftemplates/cs2_cftemplate.yaml)
 
