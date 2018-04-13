@@ -8,7 +8,7 @@
 ```
 
 # Cloud-Supervisor v2 (CS2)
-Auto remediation actions for AWS.
+Auto remediation bots for AWS.
 
 This solution is meant to be used in conjunction with Dome9's Continuous Compliance Engine to remediate issues that are uncovered. 
 
@@ -35,7 +35,7 @@ Cloud-Supervisor 2 is an **automatic remediation solution for AWS** built on top
 
 ## Why and when would I need it ?
 Dome9 Compliance Engine continuously scans the relevant cloud account (AWS,Azure,GCP) for policy violations, and then alert and report.<br/>
-For some organizations that is enough. However, at a certain scale and cloud matureness level- organizations prefer to move towards automatic-remediation approach, in which the system takes specific automated remediation actions in regards to specific violations.</br>
+For some organizations that is enough. However, at a certain scale and cloud matureness level- organizations prefer to move towards automatic-remediation approach, in which the system takes specific automated remediation bots in regards to specific violations.</br>
 This approach could reduce the load from the security operators and drastically reduce the time to resolve security issues.
 
 ## How does it work ?
@@ -52,9 +52,9 @@ This approach could reduce the load from the security operators and drastically 
 
 - Dome9 will scan the accounts on an ongoing basis and send failing rules to SNS
 - In the rules, if we want to add remediation, we can add in a "remediation flag" into the compliance section so that the SNS event is tagged with what we want to do. 
-- Each remediation action that is tagged correlates to a file in the actions folder of the remediation function. 
+- Each remediation bot that is tagged correlates to a file in the bots folder of the remediation function. 
 - Lambda reads the message tags and looks for a tag that matches AUTO: <anything>
-- If any of those AUTO tags match a remediation that we have built out, it'll call that action.
+- If any of those AUTO tags match a remediation that we have built out, it'll call that bot.
 - All of the methods are sending their events to an array called text_output. Once the function is finished working, this array is turned into a string and posted to SNS
 
 
@@ -69,7 +69,7 @@ You can deploy this stack via the link below. It'll automatically select the reg
 Click the link and click Next > Next > Next.
 
 
-On the 4th page, you'll need to check the 2 boxes that allow this template to create IAM resources with custom names (This is for the role that is created for Lambda to perform the actions).
+On the 4th page, you'll need to check the 2 boxes that allow this template to create IAM resources with custom names (This is for the role that is created for Lambda to perform the bots).
 
 Next, click on the 'Create Change Set' button at the bottom of the page. Then click 'Execute' 
 
@@ -103,7 +103,7 @@ This is the default mode. Nothing needs to be changed.
 
 
 #### Multi
-In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different account than the one the function is running in. Each account that will have remediation actions will need a cross-account role to the master account. 
+In multi account mode, the function will run in the local account but will also try to assume a role into another account if the event was from a different account than the one the function is running in. Each account that will have remediation bots will need a cross-account role to the master account. 
 
 #### Setup for Multi-account mode in AWS:
 In the dome9AutoRemediations lambda function:
@@ -155,15 +155,15 @@ aws iam attach-role-policy \
 See [this section](#in-dome9-1) for sample screenshots of the setup
 
 ### Create a bundle that you want to use for auto remediation. 
-It's recommended but not required to break remediation actions into their own bundles. 
+It's recommended but not required to break remediation bots into their own bundles. 
 There is a sample bundle (sample_bundle.json) that can be used as a starting point.
 The rule in the sample bundle will remove rules from the default security group if the SG is empty. 
 
 ### For all rules that you want to add remediation to, add the remediation tag to the "Compliance Section" of the rule. 
 
-All available remediation actions are in the actions folder. 
+All available remediation bots are in the bots folder. 
 
-#### Tag Syntax: AUTO: <action_name> <params>
+#### Tag Syntax: AUTO: <bot_name> <params>
     Ex: AUTO: ec2_stop_instance
 
 ### Test this compliance bundle. 
